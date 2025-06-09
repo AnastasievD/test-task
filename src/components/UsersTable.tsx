@@ -6,7 +6,7 @@ import classNames from "classnames"
 import { Button } from "./sharedComponents/Button"
 import { Input } from "./sharedComponents/Input"
 import { Table, TableHeader, TableRow, TableCell, TableBody } from "./sharedComponents/Table"
-import { FaMars, FaVenus } from "react-icons/fa"
+import { FaMars, FaSearch, FaVenus } from "react-icons/fa"
 import { ColumnSelector } from "./sharedComponents/ColumnSelector"
 import { User } from "../utils/types"
 
@@ -104,9 +104,12 @@ export function UserTable() {
 
     return (
         <div className='p-4 overflow-auto font-sans font-normal'>
-            <div className='sticky top-0 bg-white z-10 flex justify-between items-center mb-4'>
-                <Input placeholder='Search...' value={search} onChange={(e) => setSearch(e.target.value)} className='max-w-sm' />
-            </div>
+            <Input
+                placeholder='Search...'
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className='w-full bg-[#EAEDF0] border-[#EAEDF0] pl-9'
+            />
             <div className='overflow-auto max-h-[500px] rounded-t-xl'>
                 <Table className='w-full table-auto min-w-[1024px]'>
                     <TableHeader>
