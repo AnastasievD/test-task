@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react"
 import { format, differenceInYears } from "date-fns"
+import { FaMars, FaVenus } from "react-icons/fa"
+import classNames from "classnames"
+
 import { getUsers } from "../utils/apiClient"
 import { loadSettings, saveSettings } from "../utils/localStorageHandler"
-import classNames from "classnames"
-import { Button } from "./sharedComponents/Button"
+
 import { Input } from "./sharedComponents/Input"
 import { Table, TableHeader, TableRow, TableCell, TableBody } from "./sharedComponents/Table"
-import { FaMars, FaVenus } from "react-icons/fa"
+
 import { ColumnSelector } from "./sharedComponents/ColumnSelector"
 import { User } from "../utils/types"
-import { columnsConfig, DEFAULT_COLUMNS, itemsPerPage, UNSELECTABLE_COLUMNS } from "../constants/constants"
+import { columnsConfig, DEFAULT_COLUMNS, UNSELECTABLE_COLUMNS } from "../constants/constants"
 import { Pagination } from "./Pagination"
 
 export function UserTable() {

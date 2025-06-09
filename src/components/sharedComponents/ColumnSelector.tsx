@@ -1,6 +1,7 @@
+import { useEffect, useState } from "react"
 import * as Popover from "@radix-ui/react-popover"
 import { FaCheck, FaCog } from "react-icons/fa"
-import { useEffect, useState } from "react"
+
 import { Input } from "./Input"
 import { Button } from "./Button"
 
