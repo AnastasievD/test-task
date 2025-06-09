@@ -102,6 +102,13 @@ export function UserTable() {
                 return user.ip
             case "macAddress":
                 return user.macAddress
+            case "bank":
+                return user.bank.cardType
+            case "ein":
+                return user.ein
+            case "ssn":
+                return user.ssn
+
             default:
                 return null
         }

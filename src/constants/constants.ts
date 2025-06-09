@@ -8,6 +8,9 @@ export const columnsConfig = [
     { key: "generalInfo", label: "General Info" },
     { key: "ip", label: "IP" },
     { key: "macAddress", label: "Mac IP" },
+    { key: "bank", label: "Bank" },
+    { key: "ein", label: "EIN" },
+    { key: "ssn", label: "SSN" },
 ]
 
 export const DEFAULT_COLUMNS = columnsConfig.map((col) => col.key)
