@@ -27,6 +27,7 @@ export function ColumnSelector({ columns, onChange, defaultColumns, disabledOpti
         } else {
             onChange([...columns, col])
         }
+        debugger
     }
 
     return (

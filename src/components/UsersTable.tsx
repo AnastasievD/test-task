@@ -6,24 +6,11 @@ import classNames from "classnames"
 import { Button } from "./sharedComponents/Button"
 import { Input } from "./sharedComponents/Input"
 import { Table, TableHeader, TableRow, TableCell, TableBody } from "./sharedComponents/Table"
-import { FaMars, FaSearch, FaVenus } from "react-icons/fa"
+import { FaMars, FaVenus } from "react-icons/fa"
 import { ColumnSelector } from "./sharedComponents/ColumnSelector"
 import { User } from "../utils/types"
-
-const columnsConfig = [
-    { key: "fullName", label: "Full Name", stickyLeft: true, unselectable: true },
-    { key: "birthday", label: "Birthday" },
-    { key: "gender", label: "Gender" },
-    { key: "email", label: "Email", unselectable: true },
-    { key: "phone", label: "Phone" },
-    { key: "username", label: "Username", unselectable: true },
-    { key: "generalInfo", label: "General Info" },
-    { key: "ip", label: "IP" },
-    { key: "macAddress", label: "Mac IP" },
-]
-
-const DEFAULT_COLUMNS = columnsConfig.map((col) => col.key)
-const UNSELECTABLE_COLUMNS = columnsConfig.filter((c) => c.unselectable).map((c) => c.key)
+import { columnsConfig, DEFAULT_COLUMNS, itemsPerPage, UNSELECTABLE_COLUMNS } from "../constants/constants"
+import { Pagination } from "./Pagination"
 
 export function UserTable() {
     const [users, setUsers] = useState<User[]>([])
@@ -164,7 +151,10 @@ export function UserTable() {
                             </TableRow>
                         ) : error ? (
                             <TableRow>
-                                <TableCell colSpan={columns.length + 1} className='h-[460px] text-center bg-[#F8F9F9] bg-red-100 text-red-500 font-bold'>
+                                <TableCell
+                                    colSpan={columns.length + 1}
+                                    className='h-[460px] text-center bg-[#F8F9F9] bg-red-100 text-red-500 font-bold'
+                                >
                                     {error}
                                 </TableCell>
                             </TableRow>
@@ -196,52 +186,16 @@ export function UserTable() {
                     </TableBody>
                 </Table>
             </div>
-            <div className='border-x border-b border-gray-200 rounded-b-lg px-4 py-2 flex justify-between items-center'>
-                <div className='flex items-center gap-2'>
-                    <select value={limit} onChange={(e) => setLimit(Number(e.target.value))} className='border rounded px-2 py-1'>
-                        {[10, 20, 50].map((n) => (
-                            <option key={n} value={n}>
-                                {n}
-                            </option>
-                        ))}
-                    </select>
-                    <span className='font-bold text-xs text-gray-500'>ITEMS PER PAGE</span>
-                </div>
-                <div className='flex items-center gap-2 text-sm text-gray-700'>
-                    <span>
-                        {(page - 1) * limit + 1} - {Math.min(page * limit, totalPages * limit)} of {totalPages * limit}
-                    </span>
-                    <Button className={page === 1 ? "text-gray-200" : "text-gray-700"} onClick={() => setPage(1)} disabled={page === 1}>
-                        {"<<"}
-                    </Button>
-                    <Button className={page === 1 ? "text-gray-200" : "text-gray-700"} onClick={() => setPage((p) => Math.max(1, p - 1))}>
-                        {"<"}
-                    </Button>
-                    <input
-                        className={
-                            "border rounded px-3 py-1 w-16 text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
-                        }
-                        type='number'
-                        value={page}
-                        min={1}
-                        max={totalPages}
-                        onChange={(e) => setPage(Math.min(Number(e.target.value), totalPages))}
-                    />
-                    <Button
-                        className={page === totalPages ? "text-gray-200" : "text-gray-700"}
-                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                    >
-                        {">"}
-                    </Button>
-                    <Button
-                        className={page === totalPages ? "text-gray-200" : "text-gray-700"}
-                        onClick={() => setPage(totalPages)}
-                        disabled={page === totalPages}
-                    >
-                        {">>"}
-                    </Button>
-                </div>
-            </div>
+            <Pagination
+                page={page}
+                limit={limit}
+                totalPages={totalPages}
+                onPageChange={setPage}
+                onLimitChange={(newLimit) => {
+                    setLimit(newLimit)
+                    setPage(1) // Reset page when limit changes
+                }}
+            />
         </div>
     )
 }
