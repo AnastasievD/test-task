@@ -33,6 +33,8 @@ export function UserTable() {
     const [totalPages, setTotalPages] = useState(1)
     const [search, setSearch] = useState("")
     const [loading, setLoading] = useState(false)
+    const [debouncedSearch, setDebouncedSearch] = useState(search)
+    const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
         const saved = loadSettings()
@@ -40,15 +42,31 @@ export function UserTable() {
     }, [])
 
     useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearch(search)
+        }, 500) // add debounce on search for API
+
+        return () => clearTimeout(handler)
+    }, [search])
+
+    useEffect(() => {
         const fetchData = async () => {
             setLoading(true)
-            const res = await getUsers({ page, limit, search })
-            setUsers(res.users)
-            setTotalPages(Math.ceil(res.total / limit))
-            setLoading(false)
+            setError(null)
+            try {
+                const res = await getUsers({ page, limit, search: debouncedSearch })
+                setUsers(res.users)
+                setTotalPages(Math.ceil(res.total / limit))
+            } catch (err) {
+                console.error(err)
+                setError("Opps, something went wrong")
+                setUsers([]) // if we got error we have to stash all users preloaded before
+            } finally {
+                setLoading(false)
+            }
         }
         fetchData()
-    }, [page, limit, search])
+    }, [page, limit, debouncedSearch])
 
     const handleColumnChange = (newCols: string[]) => {
         setColumns(newCols)
@@ -110,7 +128,7 @@ export function UserTable() {
                 onChange={(e) => setSearch(e.target.value)}
                 className='w-full bg-[#EAEDF0] border-[#EAEDF0] pl-9'
             />
-            <div className='overflow-auto max-h-[500px] rounded-t-xl'>
+            <div className='overflow-auto max-h-[450px] rounded-t-xl'>
                 <Table className='w-full table-auto min-w-[1024px]'>
                     <TableHeader>
                         <TableRow className='h-[28px] sticky top-0 bg-gray-100 h-[28px] z-10'>
@@ -127,7 +145,7 @@ export function UserTable() {
                                         {col.label}
                                     </TableCell>
                                 ))}
-                            <TableCell className='sticky right-0 bg-gray-100 z-10'>
+                            <TableCell className='sticky right-0 bg-gray-100 z-10 w-[48px]'>
                                 <ColumnSelector
                                     columns={columns}
                                     onChange={handleColumnChange}
@@ -142,6 +160,12 @@ export function UserTable() {
                             <TableRow>
                                 <TableCell colSpan={columns.length + 1} className='h-[460px] text-center bg-[#F8F9F9]'>
                                     Loading...
+                                </TableCell>
+                            </TableRow>
+                        ) : error ? (
+                            <TableRow>
+                                <TableCell colSpan={columns.length + 1} className='h-[460px] text-center bg-[#F8F9F9] bg-red-100 text-red-500 font-bold'>
+                                    {error}
                                 </TableCell>
                             </TableRow>
                         ) : users.length === 0 ? (
@@ -172,7 +196,7 @@ export function UserTable() {
                     </TableBody>
                 </Table>
             </div>
-            <div className='flex justify-between items-center mt-4'>
+            <div className='border-x border-b border-gray-200 rounded-b-lg px-4 py-2 flex justify-between items-center'>
                 <div className='flex items-center gap-2'>
                     <select value={limit} onChange={(e) => setLimit(Number(e.target.value))} className='border rounded px-2 py-1'>
                         {[10, 20, 50].map((n) => (
@@ -193,13 +217,15 @@ export function UserTable() {
                     <Button className={page === 1 ? "text-gray-200" : "text-gray-700"} onClick={() => setPage((p) => Math.max(1, p - 1))}>
                         {"<"}
                     </Button>
-                    <Input
+                    <input
+                        className={
+                            "border rounded px-3 py-1 w-16 text-center [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+                        }
                         type='number'
                         value={page}
                         min={1}
                         max={totalPages}
                         onChange={(e) => setPage(Math.min(Number(e.target.value), totalPages))}
-                        className='w-16'
                     />
                     <Button
                         className={page === totalPages ? "text-gray-200" : "text-gray-700"}
